@@ -13,7 +13,7 @@ class nthNode {
 		}
 
 	}
-	void printNthFromLast(Node head){
+	void printList(Node head){
 		while(head != null){
 		System.out.println( "Node " +head.data);
 		head = head.next;
@@ -39,9 +39,9 @@ class nthNode {
 		 headPtr = headPtr.next;
 		 refPtr  = refPtr.next;
 		}
-		System.out.println("result " +"Node no. " +n +headPtr.data);
+		System.out.println("result " +"Node no. " +n +" data " +headPtr.data);
 	}
-	void AddToList(Node head, int data){
+	void AddToList(Node head1, int data){
 	     Node newNode = new Node(data);
 	     Node temp = head;
 	     System.out.println( "Adding list");
@@ -64,7 +64,10 @@ class nthNode {
 	   list.AddToList(list.head,10);
 	   list.AddToList(list.head,20);
 	   list.AddToList(list.head,30);
-	   list.AddToList(list.head,40);   
+	   list.AddToList(list.head,40);
+	   list.printList(list.head);
+	   list.printNthFromLast(4);
+
 	}
 
 
