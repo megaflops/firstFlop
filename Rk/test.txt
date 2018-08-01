@@ -1,0 +1,23 @@
+rkumar@rakesh-H97-D3H:~/rimo_ey_8.1/msm8953_8940_r00012_O/LA.UM.6.6/LINUX/android$ git remote -v
+origin  ssh://rkumar@10.11.16.17:29418/msm8953_8940_r00012_O (fetch)
+origin  ssh://rkumar@10.11.16.17:29418/msm8953_8940_r00012_O (push)
+rkumar@rakesh-H97-D3H:~/rimo_ey_8.1/msm8953_8940_r00012_O/LA.UM.6.6/LINUX/android$
+rkumar@rakesh-H97-D3H:~/rimo_ey_8.1/msm8953_8940_r00012_O/LA.UM.6.6/LINUX/android$ java nthNode ^C
+rkumar@rakesh-H97-D3H:~/rimo_ey_8.1/msm8953_8940_r00012_O/LA.UM.6.6/LINUX/android$ git push origin HEAD:refs/for/o_alpha
+Counting objects: 117, done.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (15/15), done.
+Writing objects: 100% (17/17), 1.24 KiB | 0 bytes/s, done.
+Total 17 (delta 13), reused 0 (delta 0)
+remote: Resolving deltas: 100% (13/13)
+remote: Counting objects: 782133, done
+remote: Processing changes: new: 1, refs: 1, done
+remote:
+remote: New Changes:
+remote:   http://10.11.16.17:8080/10058 15151 fix for ITS failure Camera test_dng_noise_model
+remote:
+To ssh://rkumar@10.11.16.17:29418/msm8953_8940_r00012_O
+ * [new branch]      HEAD -> refs/for/o_alpha
+rkumar@rakesh-H97-D3H:~/rimo_ey_8.1/msm8953_8940_r00012_O/LA.UM.6.6/LINUX/android$
+rkumar@rakesh-H97-D3H:~/rimo_ey_8.1/msm8953_8940_r00012_O/LA.UM.6.6/LINUX/android$
+rkumar@rakesh-H97-D3H:~/rimo_ey_8.1/msm8953_8940_r00012_O/LA.UM.6.6/LINUX/android$
