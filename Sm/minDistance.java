@@ -4,7 +4,7 @@ class minDistance {
         int d = minDist("cat","cut");
         System.out.println(" Dist is "+d);
 
-        System.out.printf(" Distance2 is %d", minDist("geek", "gesek"));
+        System.out.printf(" Distance2 is %d", minDist("mango", "mangoef"));
     }
  
     public static int minDist(String a, String b) {
@@ -24,9 +24,9 @@ class minDistance {
             dp[0][i] = i;
         }
 
-        for(int i=1;i<=n;i++) {
+        for(int i=1;i<=m;i++) {
             for(int j=1;j<=n;j++) {
-                if(a.charAt(i-1) == b.charAt(j-1)) {
+                if((i-1 <= m ) && ( j-1 <= n ) && (a.charAt(i-1) == b.charAt(j-1))) {
                     dp[i][j] = dp[i-1][j-1];
                 }
                 else {
