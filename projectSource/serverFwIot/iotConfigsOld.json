@@ -1,0 +1,46 @@
+{
+    "GWID" : {
+	"count" : "1",    
+        "HOME":[
+            {
+            "id": "1",
+	    "rCount": "2",
+	    "room": [
+	      { "count" : "2",
+		 "nodes":  [   
+		    {"fp": { "count": "1","obj": ["0"] }},
+		    {"lp": { "count": "2","obj": ["0","1"] }}
+		 ]
+	     },
+	     { "count" : "2",
+		 "nodes":  [   
+		    {"fp": { "count": "1","obj": ["1"] }},
+		    {"lp": { "count": "1","obj": ["1"] }}
+		 ]
+	     }
+	    ]
+	    } 
+	    ] 
+    } 
+}
+
+
+function printConfig(config){
+	numHomes = config.GWID.count;
+	var i,j,k;
+	for(i=0 ; i <numHomes ; i++) {
+		console.log("HOME" +i);
+		for(j=0; j<config.GWID.HOME[i].rCount; j++){
+			console.log("Room" +j);
+			for(k=0; k < config.GWID.HOME[i].room[j].nodes[0].fp.count;k++){
+			   str = (config.GWID.HOME[i].room[j].nodes[0].fp.obj[k] == 1) ? "ON" : "OFF";	
+			   console.log("FP" +k +"  Status " +str);
+			  }
+			 for(k=0; k < config.GWID.HOME[i].room[j].nodes[1].lp.count;k++){
+		 	    str = (config.GWID.HOME[i].room[j].nodes[1].lp.obj[k] == 1) ? "ON" : "OFF";		 
+			    console.log("LP" +k +"  Status " +str);
+			 }
+			}
+		}
+}
+

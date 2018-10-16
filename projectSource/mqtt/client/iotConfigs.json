@@ -1,0 +1,29 @@
+
+{
+ "GW": {
+           "id": "GW1",
+	   "numType" : "3",
+	   "typeArray":["LP","FP","AP"], 
+	   "LP" : {
+		   "count": "5",
+		   "mapping":[  {"id":"lp1","des":"tl","link":"1","state": "1"},
+		   		{"id":"lp2","des":"t2","link":"1","state": "0"},
+				{"id":"lp3","des":"t3","link":"1","state": "0"},
+				{"id":"lp4","des":"t4","link":"2","state": "0"},
+				{"id":"lp5","des":"t5","link":"2","state": "1"}
+		   	     ]
+	          },
+	   "FP" : {
+		   "count": "2",
+		   "mapping":[  {"id":"fp1","des":"fl","link":"1","state": "1"},
+		   		{"id":"fp2","des":"f2","link":"2","state": "1"}
+	                     ]
+	          },
+	   "AP" : {
+		   "count": "1",
+		   "mapping":[  {"id":"ap1","des":"al","link":"1","state": "1"}
+		             ]
+	        }
+       }
+	  
+}

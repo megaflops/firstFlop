@@ -1,0 +1,1 @@
+{"HOME":{"id":"1","numType":"3","typeArray":["LP","FP","AP"],"LP":{"count":"5","mapping":[{"link":"1","state":0},{"link":"1","state":"0"},{"link":"1","state":"0"},{"link":"2","state":"0"},{"link":"2","state":"1"}]},"FP":{"count":"2","mapping":[{"link":"1","state":0},{"link":"2","state":"1"}]},"AP":{"count":"1","mapping":[{"link":"1","state":"1"}]}}}}}
