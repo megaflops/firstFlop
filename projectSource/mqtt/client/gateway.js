@@ -1,13 +1,18 @@
 var mqtt=require('mqtt');
-//require("trace");
+var log= require('./trace');
+var config=require("./config");
 var fs = require('fs');
 var gJasonObject = JSON.parse(fs.readFileSync('./iotConfigs.json', 'utf8'));
 var gDeviceState = "INIT";
-var cloudIp = "mqtt://test.mosquitto.org/1883";
-var localBrokerIp="mqtt://localhost";
-var myID = "GW2";
-var username = "rakesh";
-var password = "rakesh"
+var cloudIp = "mqtt://test1.mosquitto.org/1883";
+//var localBrokerIp="mqtt://localhost";
+var localBrokerIp = "mqtt://iot.eclipse.org";
+//var localBrokerIp = "mqtt://test.mosquitto.org/1883"
+var myID = config.myID;
+
+
+//test
+var gState="OFF"
 
 //Connecting to cloud
 console.log("Connecting to cloud");
@@ -50,10 +55,12 @@ var pub_device_status= "/+/+/STATUS";
 var actionMessage = {   
              	"type": "LP",
 	        "index":"1",
-		"mapping":[ { "id":"lp1", "des":"t1","link":"1", "state":"1"}]
+		"mapping":{ "id":"lp1", "des":"null","link":"1", "state":"1"}
 	      }
+var msgFromDevice = "{\"type\": \"LP\",\"mapping\":{\"id\":\"lp1\",\"des\":\"t1\",\"link\":\"1\", \"state\":\"0\"}}"
+		      
 var options={
-	retain:true,qos:1
+	retain:false,qos:1
 }
 //On connect: Subscribing to topic
 client.on("connect",function(){	
@@ -61,18 +68,17 @@ client.on("connect",function(){
 	//Now Subscribe to topics
 	if(gDeviceState == "INIT"){
 		client.subscribe(pub_topic_register,{qos:0,retain:false}); //topic list
-		var json = JSON.stringify(gJasonObject);
+		//var json = JSON.stringify(gJasonObject);
 		client.publish(pub_topic_register,"TEST",options);
 	}
 })
 //On connect: Subscribing to topic
-localClient.on("connect",function(){	
+localClient.on("connect",function(){
+	var str;
 	console.log("connected local broker " +localClient.connected);
-	localClient.subscribe(pub_device_status);
-	localClient.subscribe(pub_device_register);
-	localClient.subscribe(pub_device_de_register);
-	//TEST
-	var timer_id=setInterval(function(){localPublish("/lp/tt/STATUS","OFF",options);},5000);
+	localClient.subscribe(pub_device_register,{qos:1,retain:true});
+	localClient.subscribe(pub_device_de_register,{qos:1,retain:true});
+	localPublish("GW_RESET","GW_RESET",{qos:1,retain:false});
 })
 
 function publishSubscribeAfterRegis()
@@ -83,14 +89,13 @@ function publishSubscribeAfterRegis()
 		client.subscribe(pub_topic_action,{qos:1,retain:false}); //topic list
 	 	var json = JSON.stringify(actionMessage);
 		//client.publish(pub_topic,json,options);
-		var timer_id=setInterval(function(){publish(pub_topic_action,json,options);},10000);
+		//var timer_id=setInterval(function(){publish(pub_topic_action,json,options);},10000);
 	}
         else{
 	    console.log(" # Invalid Satate of HUB" +gDeviceState);
 	}
 
 }
-
 /************************* PUBLISH ****************************/
 //publish function
 function publish(topic,msg){
@@ -103,14 +108,15 @@ function publish(topic,msg){
 }
 //publish function
 function localPublish(topic,msg){
-  console.log("## Publishing Local::" +topic +"::" +msg);
+   console.log("## Publishing Local::" +topic +"::" +msg);
+ 
   if (localClient.connected == true){
    localClient.publish(topic,msg,options);
    }
    else {
 	  console.log(" publishing Local Connect error " +localClient.connected);
    }
-}
+ }
 
 /************************* SUBSSCRIBE ****************************/
 //Subscriber call back
@@ -136,32 +142,56 @@ client.on('message',function(topic, message, packet){
 
 	   
 });
+function convertDeviceMessageToJason(topic,message){
+	var types = topic.split("/");
+	var jason = JSON.parse(msgFromDevice);
+	jason.type = types[1];
+	jason.mapping.id = types[2];
+	if(message == "1")
+	     jason.mapping.state =1;
+	else if(message == "0")
+	     jason.mapping.state =0;
+	else
+	     console.log("Local Received " +message +" is not yet supported");
+	return jason;
+}
 //Subscriber call back from local broker
 localClient.on('message',function(topic, message, packet){
 	var types = topic.split("/");
-	console.log("Local Received topic is "+ topic +" message " +message  +"::" +types[2] +types[3]);
+        console.log("Local Received topic is "+ topic +" message " +message  +"::" +types[1] +types[2]);
 	switch(types[3]){
 		case "REGISTER":
-		     topic = createSubscribeTopicForDevices(message);
-		     console.log("Received registration from device, created topic" +message +"::" +topic);
-		     if(topic != "false") {
-		     console.log("Device subscribing");
-		     //addDevcieToList(message);
+		     var jsonMessage = JSON.parse(message);
+		     topic = createSubscribeTopicForDevices(jsonMessage);
+		     console.log("Received registration from device, created topic" +jsonMessage.type +jsonMessage.mapping.id  +"::" +topic);
+		     if(topic == "false") {
+			//id = getDeviceIDForNewDevice(message);
+		     	//message.mapping.id = id;
+		     	//addDevcieToList(message);
 		     }
-		     break;
+		     	console.log("Device subscribing to STATUS for device " +types[2]);
+			localClient.subscribe(topic,{qos:1,retain:true});
+			topic = "/" + jsonMessage.type + "/" +jsonMessage.mapping.id +"/" +"ACCEPTED";
+       			//+config.deviceRegistrationAccepted;
+			localPublish(topic,jsonMessage.mapping.id);
+			//Test
+			//var timer_id=setInterval(function(){localPublish("/"+jsonMessage.type+"/"+jsonMessage.mapping.id +"/" +"ACTION","1",options);},5000);
+		      break;
 		case "DEREGISTER":
 		     topic = createSubscribeTopicForDevices(message);
 		     console.log("Received de-registration from device, created topic" +message +"::" +topic);
 		     if(topic != "false") {
 		     console.log("Device un-subscribing");
-		     localClient.unsubscribe(topic,); //topic list
+		     localClient.unsubscribe(topic); //topic list
 		     }
 		     break;
 
 		case "STATUS":
 		     console.log("got Status from device" +message +"::" +topic);
-		     searchAndUpdate(topic,message);
+		     jasonMsg = convertDeviceMessageToJason(topic,message);
+		     searchAndUpdate(topic,jasonMsg);
 		     break;
+
 		case "EMER":
 		     break;
 
@@ -172,20 +202,21 @@ localClient.on('message',function(topic, message, packet){
 });
 
 function parseTypeFromCl(message){
-	 var jason = JSON.parse(message);
-	 return jason.type;
+	 //var jason = JSON.parse(message);
+	 return message.type;
 }
 function parseIdFromCl(message){
-	 var jason = JSON.parse(message);
-	 return jason.mapping[0].id;
+	 //var jason = JSON.parse(message);
+	 //return jason.mapping.id;
+	 return message.mapping.id;
 }
 function parseStateFromCl(message){
-	 var jason = JSON.parse(message);
-	 return jason.mapping[0].state;
+	 //var jason = JSON.parse(message);
+	 return message.mapping.state;
 }
-function parseIndexFromCi(message){
-	 var jason = JSON.parse(message);
-	 return parseInt(jason.index,10) -1;
+function parseIndexFromCI(message){
+	 //var jason = JSON.parse(message);
+	 return parseInt(message.index,10) -1;
 }
 function getStatesForIndexFromDb(type,index){
 	console.log("getStatesForIndexFromDb " +type +" " +index);
@@ -267,13 +298,17 @@ function searchForDeviceInDb(message){
 	var type  = parseTypeFromCl(message);
 	var id = parseIdFromCl(message);
 	var i,j;
+	if(id == config.newDeviceID){
+	   console.log("new deice found with type ", type);
+	   return false;  
+	}
 	for(i=0; i< gJasonObject.GW.numType;i++){
 		if(type == gJasonObject.GW.typeArray[i]){
 		   switch(type){
 			   case "LP":
 			   for(j=0; j< gJasonObject.GW.LP.count;j++){
 			       if(gJasonObject.GW.LP.mapping[j].id == id){
-				  console.log("searchForDeviceInDb deice id found" +id +type);
+				  console.log("searchForDeviceInDb deice id found  " +id +type);
 				  return gJasonObject.GW.LP.mapping[j];
 			       }
 			   }
@@ -281,14 +316,14 @@ function searchForDeviceInDb(message){
 			    case "FP":
 			    for(j=0; j< gJasonObject.GW.FP.count;j++){
 			       if(gJasonObject.GW.FP.mapping[j].id == id){
-				  log.i("searchForDeviceInDb deice id found" +id +type);
+				  log.i("searchForDeviceInDb deice id found  " +id +type);
 				  return gJasonObject.GW.LP.mapping[j];
 			       }
 			    }
 			     case "AP":
 			    for(j=0; j< gJasonObject.GW.AP.count;j++){
 			       if(gJasonObject.GW.AP.mapping[j].id == id){
-				  log.i("searchForDeviceInDb deice id found" +id +type);
+				  log.i("searchForDeviceInDb deice id found  " +id +type);
 				  return gJasonObject.GW.LP.mapping[j];
 			       }
 			    }
@@ -302,12 +337,12 @@ function createSubscribeTopicForDevices(message){
 	var topic = "false";
 	var check= searchForDeviceInDb(message);
 	if(check){
-		console.log("Device type match found " +message );
-		topic = message.mapping[0].id + "/" +message.mapping[0].des +"/" +"STATUS";
-		console.log("Found Device type " +(message.type));
+		console.log("Device type match found " +message.mapping.id);
+		topic = "/" + message.type +"/" +message.mapping.id +"/" +"STATUS";
+		console.log("Found Device type " +(message.type) +" "  +topic);
 		}
 	else{
-		console.log("Device type NOT found Adding entry " +message );
+		console.log("Device ID NOT found Adding entry " +message.type +message.mapping.id );
 	}
 	return topic;
 }
@@ -320,10 +355,18 @@ function  publishToClient(topic,nextState){
 
 function searchAndUpdate(topic, message){
 	var mapping= searchForDeviceInDb(message);
+	var newState;
+	var stateStr="0";
 	if(mapping){
 	       newState = parseStateFromCl(message);	
-	       log.i("updating state from" +mapping.state   +"to  " +newState);
-	       mapping.state = newState; 	
+	       console.log("updating state from" +mapping.state   +"to  " +newState);
+	       mapping.state = newState;
+	       if(newState == "0")
+		    stateStr = "1";
+	       else if(newState == "0")
+		    stateStr = "0"; 
+	       var timer_id=setTimeout(function(){localPublish("/LP/lp1/ACTION",stateStr,options);},500);
+	      
 	}
 	else{
 	    log.e(" searchAndUpdate device id not found" +topic);

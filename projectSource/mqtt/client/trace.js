@@ -1,19 +1,25 @@
 
-function log.e(var string){
+function e(string){
 	console.log("ERROR" +string);
 }
 
-function log.v(var string){
+function v(string){
 	console.log("INFO" +string);
 }
 
-function log.w(var string){
+function w(string){
 	console.log("WARNING" +string);
 }
 
-function log.d(var string){
+function d(string){
 	console.log("DEBUG" +string);
 }
-function log.i(var string){
+function i(string){
 	console.log("DEBUG" +string);
 }
+
+module.exports = e;
+module.exports = v;
+module.exports = w;
+module.exports = d;
+module.exports = i;
