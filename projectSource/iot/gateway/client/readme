@@ -1,0 +1,3 @@
+https://mosquitto.org/download/
+cd C:\Program Files (x86)\mosquitto
+# net start mosquitto

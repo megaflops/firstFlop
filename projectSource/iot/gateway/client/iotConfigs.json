@@ -1,0 +1,15 @@
+
+{
+ "GW": {
+           "id": "GW1",
+	   "numType" : "3",
+	   "typeArray":["LP","FP","AP"], 
+	   "LP" : {
+		   "count": "2",
+		   "mapping":[  {"id":"ESP3A792164020","subId":"lp1","des":"tl","link":"1","state": "0"},
+		   		{"id":"ESP3A792164020","subId":"lp2","des":"t2","link":"1","state": "0"}
+		   	     ]
+	          }
+      }
+	  
+}

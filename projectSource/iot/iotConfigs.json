@@ -1,0 +1,26 @@
+
+{
+ "GW": {
+           "id": "GW1",
+	   "numType" : "3",
+	   "typeArray":["LP","FP","AP"], 
+	   "LP" : {
+		   "count": "2",
+		   "mapping":[  {"id":"esp","id":"lp1","des":"tl","link":"1","state": "1"},
+		   		{"id":"esp","id":"lp2","des":"t2","link":"1","state": "0"}
+		   	     ]
+	          },
+	   "FP" : {
+		   "count": "2",
+		   "mapping":[  {"id":"esp","id":"fp1","des":"fl","link":"1","state": "1"},
+		   		{"id":"esp","id":"fp2","des":"f2","link":"2","state": "1"}
+	                     ]
+	          },
+	   "AP" : {
+		   "count": "1",
+		   "mapping":[  {"id":"esp","id":"ap1","des":"al","link":"1","state": "1"}
+		             ]
+	        }
+       }
+	  
+}
