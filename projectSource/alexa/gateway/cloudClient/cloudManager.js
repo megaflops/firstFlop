@@ -7,6 +7,7 @@ var common=require("../gatewayCommon/common");
 var dm=require("../deviceClient/deviceManager");
 var Validator = require('../../node_modules/jsonschema').Validator;
 var gwCloudInstance=null;
+var gDeviceListJasonGenerated=0;
 var cloudGenID="1";
 LOG_TAG = "CloudMgr";
 gwErrorDevicesJason = 
@@ -48,9 +49,12 @@ function connectCB(){
         gwCloudInstance.subscribe(config.actionSubscription);
         gwCloudInstance.subscribe(config.registerAcceptedSubscription);
         //Publish
-        //var json = getDevicesListJason();
-        //log.Info(LOG_TAG,"publish register cmd " +config.registerPublilsh +JSON.stringify(json));
-        //gwCloudInstance.publish(config.registerPublilsh,JSON.stringify(json),common.publishOptions);
+        if(gDeviceListJasonGenerated == 1){
+        var json = getDevicesListJason();
+        log.Info(LOG_TAG,"dev json was ready so publish register " +config.registerPublilsh +JSON.stringify(json));
+        gwCloudInstance.publish(config.registerPublilsh,JSON.stringify(json),common.publishOptions);
+        gDeviceListJasonGenerated=0;
+        } 
         gwCloudInstance.state = common.stateConnected;
     }
     else
@@ -143,8 +147,10 @@ module.exports.verifyAndPublishStatus = function(json){
     }
     else if(gwCloudInstance && (gwCloudInstance.state == common.stateRegistered))
             gwCloudInstance.publish(config.statusPublilsh,JSON.stringify(json),common.publishOptions);
-    else
+    else{
         log.Err(LOG_TAG,"wrong state in verifyAndPublishStatus" +gwCloudInstance.state);
+        gDeviceListJasonGenerated = 1;
+    }
 }
 
 function getDevicesListJason(){
