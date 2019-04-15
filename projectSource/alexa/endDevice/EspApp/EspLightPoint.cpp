@@ -29,6 +29,8 @@ EspLightPoint::EspLightPoint(String deviceType,String deviceId,String brokerAddr
     jsonLength=0;
     mOnBoardLED[0] = new EspLight(LED_ONBOARD);
     mOnBoardLED[1] = new EspLight(LED_ONMODULE);
+    mOnBoardLED[2] = new EspLight(D5); //GPIO14
+    mOnBoardLED[3] = new EspLight(D6); //GPIO12
     mBoard.loadConfigFromFlash();
     setupDisplay();
 }
@@ -211,10 +213,12 @@ void EspLightPoint::messageCallback(String topic, byte* message, unsigned int le
                      logErr(LOG_TAG,index); 
                      if(strcmp(action.state,"on") == 0){
                             mOnBoardLED[index]->turnOn();
+                            mOnBoardLED[index+2]->turnOn();
                             logInfo(LOG_TAG,"Turning LED ON");
                     }
                     else if( strcmp(action.state,"off")== 0){
                         mOnBoardLED[index]->turnOff();
+                        mOnBoardLED[index+2]->turnOff();
                         logInfo(LOG_TAG,"Turning LED OFF");
                     }
                     else{

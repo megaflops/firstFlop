@@ -158,7 +158,7 @@ function getDevicesListJason(){
     log.Info(LOG_TAG,"device list JSON From gateway" +json);
     return json;
 }
-function sendGatewayStatus(jason){
+function sendGatewayStatus(json){
     log.Info(LOG_TAG,"Sending status to cloud",+JSON.stringify(json));
     gwCloudInstance.publish(config.statusPublilsh,JSON.stringify(json),common.publishOptions);
 }

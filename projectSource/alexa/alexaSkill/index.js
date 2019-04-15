@@ -64,37 +64,37 @@ var returnJson={
 };
 
 function parseResposneFromCloud(responseString){
-    var speechText,speechTextExt;
-    console.log("response form cloud");
-    var jsonObj = JSON.parse(responseString);
-    if(jsonObj.return === "success") {
-      if(jsonObj.commandType === "status"){
-         speechText = " status of " +jsonObj.location  +"  " + jsonObj.name;
-         speechTextExt = " which is" +"  "  +jsonObj.nameas +" in " +jsonObj.locationName +" is " +jsonObj.state;
-         speechText = speechText+speechTextExt;
-      }
-      else{
-        speechText = "truning " +jsonObj.state +"  "  +jsonObj.location +"  "  + jsonObj.name;
-        speechTextExt = "  which is " +jsonObj.nameas +"  in  " +jsonObj.locationName;
-        speechText = speechText+speechTextExt;
-      }
+  var speechText,speechTextExt;
+  console.log("response form cloud");
+  var jsonObj = JSON.parse(responseString);
+  if(jsonObj.return === "success") {
+    if(jsonObj.commandType === "status"){
+       speechText = " status of " +jsonObj.location  +"  " + jsonObj.name;
+       speechTextExt = " which is" +"  "  +jsonObj.nameas +" in " +jsonObj.locationName +" is " +jsonObj.state;
+       speechText = speechText+speechTextExt;
     }
-    else if(jsonObj.return === "samestate") {
-        speechText =   "state of  " +jsonObj.location +"  "  + jsonObj.name;
-        speechTextExt = "  which is" +"  "  +jsonObj.nameas +" in " +jsonObj.locationName +" is already " +jsonObj.state;
-        speechText = speechText+speechTextExt;
+    else{
+      speechText = "truning " +jsonObj.state +"  "  +jsonObj.location +"  "  + jsonObj.name;
+      speechTextExt = "  which is " +jsonObj.nameas +"  in  " +jsonObj.locationName;
+      speechText = speechText+speechTextExt;
     }
-    else if(jsonObj.return === "no init"){
-      speechText = " I am having trouble with initlization of gateway";
-    }
-    else {
-       if(jsonObj.commandType === "status") 
-        speechText = " I am having trouble with status of" +"  " +jsonObj.location +"  " + jsonObj.name;
-       else
-       speechText = " I am having trouble with turning " +"  " +jsonObj.state +"  " +jsonObj.location +"  " + jsonObj.name;
-    }
-    //console.log("Sppech" +speechText);
-    return speechText;
+  }
+  else if(jsonObj.return === "samestate") {
+      speechText =   "state of  " +jsonObj.location +"  "  + jsonObj.name;
+      speechTextExt = "  which is" +"  "  +jsonObj.nameas +" in " +jsonObj.locationName +" is already " +jsonObj.state;
+      speechText = speechText+speechTextExt;
+  }
+  else if(jsonObj.return === "no init"){
+    speechText = " I am having trouble with initlization of gateway";
+  }
+  else {
+     if(jsonObj.commandType === "status") 
+      speechText = " I am having trouble with status of" +"  " +jsonObj.location +"  " + jsonObj.name;
+     else
+     speechText = " I am having trouble with turning " +"  " +jsonObj.state +"  " +jsonObj.location +"  " + jsonObj.name;
+  }
+  //console.log("Sppech" +speechText);
+  return speechText;
 }
 
 async function  sendHTTPRequest(jsonString) {
@@ -150,15 +150,24 @@ async function sendAndWait(json){
   }
 }
 
-function createActionJson(location, name,state){
-  if(typeof location  === 'undefined')
+function createActionJson(state,roomName, roomNum,lightName,lightNUmber){
+  console.log("Data"  +state +roomName +roomNum +lightName +lightNUmber );
+  if(typeof roomName  === 'undefined')
     gActionJson.location = "NA";
-  else
-    gActionJson.location  = "room" + location;
-  if(typeof name === 'undefined')
+  else{
+    if(typeof roomNum === 'undefined')
+      gActionJson.location  =  roomName;
+    else 
+      gActionJson.location  = roomName + roomNum;
+  }
+  if(typeof lightName === 'undefined')
     gActionJson.name = "NA";
-  else
-    gActionJson.name  = "light" + name;
+  else{
+      if(typeof lightNUmber === 'undefined')
+        gActionJson.name  =  lightName;
+      else 
+        gActionJson.name  = lightName + lightNUmber;
+  }
   if(typeof state === 'undefined'){
     gActionJson.state = "NA";
     gActionJson.commandType = "status";
@@ -191,12 +200,14 @@ const MeraGharGateWayIntentHandler = {
     async handle(handlerInput) {
         console.log("Sending http request");
         //console.log(handlerInput.requestEnvelope.request);
-        var json = createActionJson(handlerInput.requestEnvelope.request.intent.slots.roomID.value,
-                         handlerInput.requestEnvelope.request.intent.slots.lightID.value,
-                          handlerInput.requestEnvelope.request.intent.slots.state.value
-                         );
-        //sendAndWait(json);
-        
+        var json = createActionJson(
+          handlerInput.requestEnvelope.request.intent.slots.state.value,
+          handlerInput.requestEnvelope.request.intent.slots.roomType.value,
+          handlerInput.requestEnvelope.request.intent.slots.roomID.value,
+          handlerInput.requestEnvelope.request.intent.slots.lightType.value,
+          handlerInput.requestEnvelope.request.intent.slots.lightID.value,
+        );
+          
         const myPromise =  await sendHTTPRequest(json);
         var result = myPromise;
         var speech;

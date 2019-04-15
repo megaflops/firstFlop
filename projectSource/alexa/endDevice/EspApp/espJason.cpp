@@ -15,13 +15,13 @@ char gDeviceJson[] =
          \"model\": \"123\", \
          \"brand\":\"Amber\", \
          \"location\":\"room1\", \
-         \"locationName\":\"guestRoom\", \
+         \"locationName\":\"children room\", \
          \"numConnections\":2, \
          \"connections\": [ \
           { \"state\":\"on/off\", \"as\":\"light2\",\"subTypeName\": \
-             \"tubeLight\",\"rating\":\"6a\",\"currentState\":\"off\",\"requestedState\":\"off\",\"lastUpdated\":\"0\"},\
+             \"study lamp\",\"rating\":\"6a\",\"currentState\":\"off\",\"requestedState\":\"off\",\"lastUpdated\":\"0\"},\
           { \"state\":\"on/off\", \"as\":\"light3\",\"subTypeName\": \
-             \"NightLamp\",\"rating\":\"6a\",\"currentState\":\"off\",\"requestedState\":\"off\",\"lastUpdated\":\"0\" \
+             \"table lamp\",\"rating\":\"6a\",\"currentState\":\"off\",\"requestedState\":\"off\",\"lastUpdated\":\"0\" \
           } \
         ]\ 
   }\

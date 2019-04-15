@@ -113,7 +113,7 @@ async function  sendHTTPRequest(jsonString) {
     console.log('problem with request: ' + err);
     reject("error");
    })
-   console.log("sending data " +jsonString);
+   //console.log("sending data " +jsonString);
    req.write(jsonString);
    req.end();
   
@@ -141,15 +141,24 @@ async function sendAndWait(json){
   }
 }
 
-function createActionJson(location, name,state){
-  if(typeof location  === 'undefined')
+function createActionJson(state,roomName, roomNum,lightName,lightNUmber){
+  console.log("Data"  +state +roomName +roomNum +lightName +lightNUmber );
+  if(typeof roomName  === 'undefined')
     gActionJson.location = "NA";
-  else
-    gActionJson.location  = "room" + location;
-  if(typeof name === 'undefined')
+  else{
+    if(typeof roomNum === 'undefined')
+      gActionJson.location  =  roomName;
+    else 
+      gActionJson.location  = roomName + roomNum;
+  }
+  if(typeof lightName === 'undefined')
     gActionJson.name = "NA";
-  else
-    gActionJson.name  = "light" + name;
+  else{
+      if(typeof lightNUmber === 'undefined')
+        gActionJson.name  =  lightName;
+      else 
+        gActionJson.name  = lightName + lightNUmber;
+  }
   if(typeof state === 'undefined'){
     gActionJson.state = "NA";
     gActionJson.commandType = "status";
@@ -162,6 +171,6 @@ function createActionJson(location, name,state){
   return JSON.stringify((gActionJson));
 }
 
-var jsonStr = createActionJson(1,2,"on")
+var jsonStr = createActionJson("on","bed room", "1", "tubelight","2");
 sendAndWait(jsonStr);
 console.log("function end");

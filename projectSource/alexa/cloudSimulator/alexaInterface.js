@@ -70,16 +70,16 @@ var httpsHandler = function (req, res) {
   res.writeHead(200, {'Content-Type': 'text/plain'});
   res.end('Hello HTTPS World\n');
 };
-*/
+
 var httpOptions =  {
     key: fs.readFileSync("./privatekey1.pem"),
     cert: fs.readFileSync("./certificate1.pem")
 }
-
+*/
 module.exports.alexaInterfaceInit = function(secure){
     if(secure == 1){
        console.log("Starting HTTPS server on port" +port);
-       httpsServer = https.createServer(httpOptions);
+       //httpsServer = https.createServer(httpOptions);
        httpsServer.addListener("request", httpsHandler);
        httpsServer.listen(port);
     }

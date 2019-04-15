@@ -4,9 +4,9 @@ var gatewayID="GATEWAY1FF1"
 exports.gatewayID=gatewayID
 
 //var localBrokerIp="mqtt://192.168.1.108/1883";
-var localBrokerIp="mqtt://172.16.4.173" //"mqtt://iot.eclipse.org"
+var localBrokerIp="mqtt://54.91.187.186" //"mqtt://iot.eclipse.org"
 exports.localBrokerIp = localBrokerIp
-var cloudBrokerIp="mqtt://test.mosquitto.org:1883"
+var cloudBrokerIp="mqtt://54.91.187.186"
 //"mqtt://173.212.209.27/1883"
 exports.cloudBrokerIp = cloudBrokerIp
 var keepAlive=40

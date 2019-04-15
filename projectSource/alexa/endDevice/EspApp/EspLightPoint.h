@@ -60,7 +60,7 @@ class EspLightPoint {
         void setLpPowerState(String msg);
         void setLpLumnious(String msg);
         bool factoryReset(String msg);
-        EspLight *mOnBoardLED[2];
+        EspLight *mOnBoardLED[4];
         int ledGPIO;
         int onBoardGPIO;
         EspDisplay *mDispPtr;

@@ -267,14 +267,18 @@ var returnJson={
     "return":"failure",
     "commandType":"xxxxxxxxx"
 }
+
 module.exports.parseAndPrepareActionToGateway =  function(inputJasonStr){
     var state;
     var i,j,k;
     var JsonObj;
+    var calledWithLightName=0;
+    var calledWithLocationName=0;
     inputJason = JSON.parse(inputJasonStr);
     returnJson.return = "failure";
-    returnJson.location = inputJason.location;
     returnJson.name = inputJason.name;
+    returnJson.location = inputJason.location;
+    returnJson.commandType = inputJason.commandType;
     if(inputJason.commandType != 'status')
         returnJson.state = inputJason.state;
     if(cloudState == 'default')
@@ -284,9 +288,14 @@ module.exports.parseAndPrepareActionToGateway =  function(inputJasonStr){
         JsonObj = JSON.parse(cloudInstance.gatewayArray[i].gatewayDeviceListJson);
         for(j=0; j < JsonObj.numberLocations ; j++){
             log.Info(LOG_TAG_CLOUD,"location:" +JsonObj.locations[j].name +inputJason.location);
-             if( JsonObj.locations[j].name == inputJason.location){
+             if( (JsonObj.locations[j].name == inputJason.location) ||
+                 (calledWithLocationName=(JsonObj.locations[j].locationName == inputJason.location))
+                 ){
                 for(k=0 ; k < JsonObj.locations[j].numberDevices; k++){
-                    if(JsonObj.locations[j].devices[k].as == inputJason.name){
+                    if( (JsonObj.locations[j].devices[k].as == inputJason.name) ||
+                        (calledWithLightName=(JsonObj.locations[j].devices[k].subTypeName == inputJason.name))
+                      )
+                        {
                         log.Info(LOG_TAG_CLOUD,"location & device name MATCHED " +inputJason.location
                         +inputJason.name);
                         state = JsonObj.locations[j].devices[k].currentState;
@@ -294,28 +303,61 @@ module.exports.parseAndPrepareActionToGateway =  function(inputJasonStr){
                             log.Info(LOG_TAG_CLOUD, "received cmd for stauts from cloud" +state);
                             returnJson.version = 3;
                             returnJson.location = inputJason.location;
-                            returnJson.locationName = JsonObj.locations[j].locationName;
                             returnJson.name = inputJason.name;
-                            returnJson.nameas = JsonObj.locations[j].devices[k].subTypeName;
                             returnJson.state = state;
                             returnJson.commandType = inputJason.commandType;
                             returnJson.return = "success";
+                            if(calledWithLocationName == 0){
+                                returnJson.locationName = JsonObj.locations[j].locationName;
+                            }
+                            else{
+                                returnJson.locationName = JsonObj.locations[j].name;
+                                returnJson.location = JsonObj.locations[j].locationName;
+                                inputJason.location = JsonObj.locations[j].name;
+                            }
+                            if(calledWithLightName == 0){
+                                returnJson.nameas = JsonObj.locations[j].devices[k].subTypeName;
+                            }
+                            else{
+                                returnJson.nameas = JsonObj.locations[j].devices[k].as;
+                                returnJson.name = JsonObj.locations[j].devices[k].subTypeName;
+                                inputJason.name = JsonObj.locations[j].devices[k].as;
+                            }
                             return JSON.stringify(returnJson);
                         }
                         else{
                             log.Info(LOG_TAG_CLOUD, "received cmd for action from cloud" +state);
                             log.Info(LOG_TAG_CLOUD, "Rest" + JsonObj.locations[j].locationName
                                                             +inputJason.name
+                                                            +inputJason.location
                                                             +JsonObj.locations[j].devices[k].subTypeName
                             );
                             returnJson.version = 3;
                             returnJson.location = inputJason.location;
-                            returnJson.locationName = JsonObj.locations[j].locationName;
                             returnJson.name = inputJason.name;
-                            returnJson.nameas = JsonObj.locations[j].devices[k].subTypeName;
                             //Dont send the current state as response
                             //returnJson.state = state;
                             returnJson.commandType = inputJason.commandType;
+                            if(calledWithLocationName == 0){
+                                returnJson.locationName = JsonObj.locations[j].locationName;
+                            }
+                            else{
+                                //log.Err(LOG_TAG_CLOUD, "Test locaion before" +JSON.stringify(inputJason) 
+                               // +JsonObj.locations[j].locationName +JsonObj.locations[j].name
+                                //+JsonObj.locations[j].devices[k].as +JsonObj.locations[j].devices[k].subTypeName);
+                                returnJson['location'] = JsonObj.locations[j].locationName;
+                                returnJson['locationName'] = JsonObj.locations[j].name;
+                                inputJason['location'] = JsonObj.locations[j].name;
+                                //log.Err(LOG_TAG_CLOUD, "Test locaion after" +JSON.stringify(inputJason) +JSON.stringify(returnJson));
+                            }
+                            if(calledWithLightName == 0){
+                                returnJson['nameas'] = JsonObj.locations[j].devices[k].subTypeName;
+                            }
+                            else{
+                                returnJson['nameas'] = JsonObj.locations[j].devices[k].as;
+                                returnJson['name'] = JsonObj.locations[j].devices[k].subTypeName;
+                                inputJason['name'] = JsonObj.locations[j].devices[k].as;
+                            }
                             if(state == inputJason.state){
                                 returnJson.return = "samestate";
                                 log.Info(LOG_TAG_CLOUD, "received action and currenrt state is same" +state);

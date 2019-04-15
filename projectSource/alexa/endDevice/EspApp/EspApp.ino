@@ -85,7 +85,7 @@ void setup() {
   Serial.println("Board setup done...");
   String devId = "DEVICE1FF1" + String(mBoardconfig.getDeviceId());
   //Set up as many as possible board, and increment device count;
-  gLightPoint = new EspLightPoint("Switch",devId,String("172.16.14.145"),LED_ONBOARD);
+  gLightPoint = new EspLightPoint("Switch",devId,String("54.91.187.186"),LED_ONBOARD);
   //iot.eclipse.org"
   setupDeviceJson(gDeviceJson,gLightPoint);
   setupLightPoint(gLightPoint);

@@ -1,4 +1,4 @@
-var cloudBrokerIp="mqtt://test.mosquitto.org"
+var cloudBrokerIp="mqtt://127.0.0.1" //"mqtt://test.mosquitto.org"
 exports.cloudBrokerIp = cloudBrokerIp
 var cloudID="CLOUD1FF1"
 exports.cloudID=cloudID
