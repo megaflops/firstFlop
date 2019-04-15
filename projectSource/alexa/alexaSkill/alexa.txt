@@ -1,9 +1,9 @@
-one can control switches,lights & fans in a home and know the status
+With this project one can control switches,lights & fans in a home and know the status of the same.
 
 
-with this skill one can make switches lights fans on and off with voice command,
+with this Alexa skill (alexaskill folder) one can make switches, lights fans on and off with voice command, skill name is "my control"
 This requires a proprietary gateway at home connected to alexa cloud, and all switches lights fans are conncected to gateway wirelessly.
-one require to have proprietary hardware board acting as switched with this skill.
+one require to have proprietary hardware board acting as switche with this skill.
 
  
 first cut version
