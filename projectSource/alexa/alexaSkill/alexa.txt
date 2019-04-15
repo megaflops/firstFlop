@@ -1,0 +1,25 @@
+one can control switches,lights & fans in a home and know the status
+
+
+with this skill one can make switches lights fans on and off with voice command,
+This requires a proprietary gateway at home connected to alexa cloud, and all switches lights fans are conncected to gateway wirelessly.
+one require to have proprietary hardware board acting as switched with this skill.
+
+ 
+first cut version
+
+
+my control to turn on room one light two
+my control to turn off room one light three
+my control to turn on tube light in bedroom
+my control to turn on bed room tube light
+my control for status of room  one light two
+my control for status of tube light in bed room
+my control for status of bed room led light
+
+testing instruction
+===================
+say alexa ask my control to turn on bed room tube light
+This skill requires proprietary hardware which is a wifi based switch box in home . it also requires a  wifi based gateway at home premises.
+Individual switches/lights talks to gateway and gateway in turn talks to cloud.
+command from alexa is routed to cloud component->gateway->individual switch
