@@ -1,4 +1,9 @@
 //Include File System Headers
+/*
+ * This file is subject to the terms and conditions defined in
+ * file 'LICENSE.txt', which is part of this source code package.
+ */
+
 #include <FS.h>
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
@@ -85,7 +90,7 @@ void setup() {
   Serial.println("Board setup done...");
   String devId = "DEVICE1FF1" + String(mBoardconfig.getDeviceId());
   //Set up as many as possible board, and increment device count;
-  gLightPoint = new EspLightPoint("Switch",devId,String("54.91.187.186"),LED_ONBOARD);
+  gLightPoint = new EspLightPoint("Switch",devId,String("3.91.218.134"),LED_ONBOARD);
   //iot.eclipse.org"
   setupDeviceJson(gDeviceJson,gLightPoint);
   setupLightPoint(gLightPoint);

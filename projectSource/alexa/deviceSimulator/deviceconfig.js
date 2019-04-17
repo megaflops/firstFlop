@@ -1,3 +1,7 @@
+/*
+ * This file is subject to the terms and conditions defined in
+ * file 'LICENSE.txt', which is part of this source code package.
+ */
 //var localBrokerIp="mqtt://192.168.0.103/1883";
 var localBrokerIp="mqtt://iot.eclipse.org";
 exports.localBrokerIp = localBrokerIp

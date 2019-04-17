@@ -1,3 +1,8 @@
+/*
+ * This file is subject to the terms and conditions defined in
+ * file 'LICENSE.txt', which is part of this source code package.
+ */
+
 var cloudBrokerIp="mqtt://127.0.0.1" //"mqtt://test.mosquitto.org"
 exports.cloudBrokerIp = cloudBrokerIp
 var cloudID="CLOUD1FF1"

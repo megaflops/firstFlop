@@ -1,4 +1,8 @@
 
+/*
+ * This file is subject to the terms and conditions defined in
+ * file 'LICENSE.txt', which is part of this source code package.
+ */
 #define ERROR_LOG 1
 #define INFO_LOG 2
 #define WARNING_LOG 3

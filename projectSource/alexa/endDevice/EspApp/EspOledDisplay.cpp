@@ -1,3 +1,7 @@
+/*
+ * This file is subject to the terms and conditions defined in
+ * file 'LICENSE.txt', which is part of this source code package.
+ */
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>

@@ -1,12 +1,17 @@
+/*
+ * This file is subject to the terms and conditions defined in
+ * file 'LICENSE.txt', which is part of this source code package.
+ */
+
 gatewayNameType="ATGateway"
 exports.gatewayNameType=gatewayNameType
 var gatewayID="GATEWAY1FF1"
 exports.gatewayID=gatewayID
 
 //var localBrokerIp="mqtt://192.168.1.108/1883";
-var localBrokerIp="mqtt://54.91.187.186" //"mqtt://iot.eclipse.org"
+var localBrokerIp="mqtt://3.91.218.134" //"mqtt://iot.eclipse.org"
 exports.localBrokerIp = localBrokerIp
-var cloudBrokerIp="mqtt://54.91.187.186"
+var cloudBrokerIp="mqtt://3.91.218.134"
 //"mqtt://173.212.209.27/1883"
 exports.cloudBrokerIp = cloudBrokerIp
 var keepAlive=40

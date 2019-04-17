@@ -1,3 +1,7 @@
+/*
+ * This file is subject to the terms and conditions defined in
+ * file 'LICENSE.txt', which is part of this source code package.
+ */
 //Subscription
 var registerSubscription="/+/cmd/register";
 exports.registerSubscription=registerSubscription;

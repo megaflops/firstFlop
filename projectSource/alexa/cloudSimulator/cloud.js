@@ -1,3 +1,8 @@
+/*
+ * This file is subject to the terms and conditions defined in
+ * file 'LICENSE.txt', which is part of this source code package.
+ */
+
 var fs=require('fs');
 var log=require('./trace');
 var config=require('./cloudConfig');
