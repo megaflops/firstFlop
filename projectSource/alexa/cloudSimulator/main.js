@@ -7,5 +7,5 @@ al = require("./alexaInterface");
 LOG_TAG_CLOUD_MAIN = "cloudMain";
 
 cl.cloudInit();
-log.Info("Init cloud done");
+log.Info(LOG_TAG_CLOUD_MAIN,"Init cloud done");
 al.alexaInterfaceInit(0);

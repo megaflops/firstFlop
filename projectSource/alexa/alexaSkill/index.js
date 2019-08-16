@@ -7,6 +7,7 @@ const fs = require('fs');
 var gActionJson= 
 {
     "version":3,
+    "cmdId":0xFFFF,
     "location":"roomxxxx",
     "name":"lightxxxx",
     "state":"xxxxxxxx",

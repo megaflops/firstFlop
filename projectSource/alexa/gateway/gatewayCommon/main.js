@@ -2,10 +2,16 @@
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
  */
-dm=require("../deviceClient/deviceManager");
+var local=1;
+ dm=require("../deviceClient/deviceManager");
 cm=require("../cloudClient/cloudManager");
-//cl=require("../../cloudSimulator/cloud")
-
+if(local == 1){
+    cl=require("../../cloudSimulator/cloud")
+    al = require("../../cloudSimulator/alexaInterface");
+}
 cm.cloudManagerInit();
 dm.deviceManagerInit();
-//cl.cloudInit();
+if(local == 1){
+    cl.cloudInit();
+    al.alexaInterfaceInit(0);
+}

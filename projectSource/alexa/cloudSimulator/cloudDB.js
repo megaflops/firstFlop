@@ -6,5 +6,6 @@ function gatewayDBClass(config){
     this.gatewayID=config.gatewayID;
     this.gatewayNameType=config.gatewayNameType; 
     this.gatewayDeviceListJson = JSON.stringify(config);
+    this.pending = 0;
 }
 module.exports=gatewayDBClass;

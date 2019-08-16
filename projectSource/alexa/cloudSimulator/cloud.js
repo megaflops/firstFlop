@@ -169,7 +169,6 @@ function validateJason(message){
     return null;
 }
 
-
 function parseStatusFromGateway(message){
     var jsonObj=null;
     var i,j,k;
@@ -208,6 +207,7 @@ function parseStatusFromGateway(message){
                 }
                 /* update device json*/
                 log.Info(LOG_TAG_CLOUD,"updating Cloud Json" +i);
+                cloudInstance.gatewayArray[i].pending = 0;
                 cloudInstance.gatewayArray[i].gatewayDeviceListJson = JSON.stringify(jsonObj);
             }
        }
@@ -217,51 +217,6 @@ function parseStatusFromGateway(message){
         log.Err(LOG_TAG_CLOUD,"parse json failed" +JSON.stringify(message));
     }
  }
-function prepareActionToGateway(inputJason,gatewayID){
-    var i,j,k;
-    if(cloudInstance.state == config.stateRegistered) {
-        //TO DO
-        //User and gateway ID matching
-        log.Info(LOG_TAG_CLOUD,"num gateway" +cloudInstance.gatewayArray.length);
-        for(var i=0; i< cloudInstance.gatewayArray.length; i++){
-            log.Info(LOG_TAG_CLOUD,"GWID:" +cloudInstance.gatewayArray[i].gatewayID +gatewayID);
-            if(cloudInstance.gatewayArray[i].gatewayID == gatewayID){
-                var JsonObj = JSON.parse(cloudInstance.gatewayArray[i].gatewayDeviceListJson);
-                for(k=0; k < JsonObj.numberLocations ; k++){
-                    log.Info(LOG_TAG_CLOUD,"location:" +JsonObj.locations[k].name +inputJason.location);
-                    if( JsonObj.locations[k].name == inputJason.location){
-                        for(j=0 ; j < JsonObj.locations[k].numberDevices; j++){
-                            if(JsonObj.locations[k].devices[j].as == inputJason.name){
-                                log.Info(LOG_TAG_CLOUD,"location & device name MATCHED " +inputJason.location
-                                +inputJason.name);
-                                var actionCmd = "/"+cloudInstance.gatewayArray[i].gatewayNameType
-                                +config.actionPublish
-                                +cloudInstance.gatewayArray[i].gatewayID;
-                                if(inputJason.state == "on")
-                                    inputJason.state = "off";
-                                else
-                                    inputJason.state = "on";
-                                log.Info(LOG_TAG_CLOUD," #### action command ####" +actionCmd +"json" +JSON.stringify(inputJason));
-                                cloudInstance.publish(actionCmd,JSON.stringify(inputJason),config.publishOptions);
-
-                            }
-                        }
-                       if(j > JsonObj.locations[i].numberDevices){
-                            log.Info(LOG_TAG_CLOUD,"Device name MISMATCHED" +inputJason.name);
-                        }
-                    }
-               }
-            }
-            if(i > cloudInstance.gatewayArray.length){
-                log.Err(LOG_TAG_CLOUD,"Device location Mismatch" +inputJason.location)
-            }
-        }  
-    }
-    else{
-        log.Err(LOG_TAG_CLOUD,"Wrong state in Action to GW" +cloudInstance.state);
-        return -1;
-    }
-}
 var returnJson={
     "version":3,
     "location":"xxxxxxxx",
@@ -273,13 +228,78 @@ var returnJson={
     "commandType":"xxxxxxxxx"
 }
 
-module.exports.parseAndPrepareActionToGateway =  function(inputJasonStr){
+function   verifyCommandId(inputJson,index){
+    var JsonObj,j,k;
+    JsonObj = JSON.parse(cloudInstance.gatewayArray[index].gatewayDeviceListJson);
+    for(j=0; j < JsonObj.numberLocations ; j++){
+        log.Info(LOG_TAG_CLOUD,"location:" +JsonObj.locations[j].name +inputJason.location);
+            if(JsonObj.locations[j].name == inputJason.location){
+            log.Info(LOG_TAG_CLOUD,"name:" +JsonObj.locations[j].devices[0].as +inputJason.name);
+            for(k=0 ; k < JsonObj.locations[j].numberDevices; k++){
+                if(JsonObj.locations[j].devices[k].as == inputJason.name){
+                    log.Info(LOG_TAG_CLOUD,"cmd ID:"+JsonObj.locations[j].devices[k].cmdId +inputJason.cmdId);
+                        if(JsonObj.locations[j].devices[k].cmdId == inputJason.cmdId){
+                          log.Info(LOG_TAG_CLOUD,"cmd ID matched return now");
+                          return 1;
+                        }
+                    }
+            }
+        }    
+    }
+    return 0;   
+}
+var tid2=null;
+function cbOnWaitForStatus(gatewayId,tid1,inputJason,resolve){
+    var i;
+    for(i=0;  i < cloudInstance.gatewayArray.length; i++){
+        if(cloudInstance.gatewayArray[i].gatewayID == gatewayId) {
+            if(cloudInstance.gatewayArray[i].pending==1){
+                log.Info(LOG_TAG_CLOUD,"call back pending is still 1");
+                tid2 =setTimeout(cbOnWaitForStatus,1000,gatewayId,tid1,inputJason,resolve);
+                break;
+            }
+            else{
+                log.Info(LOG_TAG_CLOUD,"promise pending is now 0 ");
+                if(verifyCommandId(inputJason,i)){
+                    log.Info(LOG_TAG_CLOUD,"cmd id matched");
+                    clearTimeout(tid1);
+                    resolve("success");
+                    break;
+                }
+                else{
+                    log.Info(LOG_TAG_CLOUD,"cmd id mis matched");
+                }
+               
+            }
+          }
+    }
+}
+function waitForStatusResponseFromGateway(gatewayId,inputJason){
+    var tid1=null;
+    return new Promise (function (resolve, reject){
+        tid1=setTimeout( function() {
+            clearTimeout(tid2);
+            resolve("success");
+            //reject("error");
+           },5000
+        );
+        //tid2=setTimeout(cbOnWaitForStatus,1000,gatewayId,tid1,inputJason,resolve);
+    })
+}
+var gTestVar =0;
+module.exports.parseAndPrepareActionToGateway = function(inputJasonStr){
+    var json;
+    json = internalparseAndPrepareActionToGateway(inputJasonStr);
+    return json;
+}
+async function internalparseAndPrepareActionToGateway(inputJasonStr){
     var state;
     var i,j,k;
     var JsonObj;
     var calledWithLightName=0;
     var calledWithLocationName=0;
     inputJason = JSON.parse(inputJasonStr);
+    inputJason.cmdId = Math.floor((Math.random() * 100000));
     returnJson.return = "failure";
     returnJson.name = inputJason.name;
     returnJson.location = inputJason.location;
@@ -365,7 +385,7 @@ module.exports.parseAndPrepareActionToGateway =  function(inputJasonStr){
                             }
                             if(state == inputJason.state){
                                 returnJson.return = "samestate";
-                                log.Info(LOG_TAG_CLOUD, "received action and currenrt state is same" +state);
+                                log.Info(LOG_TAG_CLOUD, "received action and current state is same" +state);
                             }
                             else{
                                 returnJson.return = "success";
@@ -374,7 +394,16 @@ module.exports.parseAndPrepareActionToGateway =  function(inputJasonStr){
                                           +cloudInstance.gatewayArray[i].gatewayID;
                                 log.Info(LOG_TAG_CLOUD," #### action command ####" +actionCmd +"json" +JSON.stringify(inputJason));
                                 cloudInstance.publish(actionCmd,JSON.stringify(inputJason),config.publishOptions);
-                                //generateResponseJson();
+                                cloudInstance.gatewayArray[i].pending=1;
+                                /*const  mypromise = await waitForStatusResponseFromGateway(cloudInstance.gatewayArray[i].gatewayID,inputJason);
+                                var status = mypromise;
+                                if(status == "error"){
+                                    log.Info(LOG_TAG_CLOUD,"promise returned error");
+                                    returnJson.return = "failure";
+                                }
+                                else{
+                                    log.Info(LOG_TAG_CLOUD,"promise returned Success");
+                                }*/
                             }
                             log.Info(LOG_TAG_CLOUD,"return Json" +JSON.stringify(returnJson));
                             return JSON.stringify(returnJson);    
@@ -393,8 +422,27 @@ module.exports.parseAndPrepareActionToGateway =  function(inputJasonStr){
     if(cloudInstance.gatewayArray.length == 0){
         log.Info(LOG_TAG_CLOUD,"No device in DB" +cloudInstance.gatewayArray.length);
         returnJson.return = "noinit";
+        /*
+        //test
+        gTestVar =1;
+        log.Info(LOG_TAG_CLOUD,"now waiting");
+        const myPromise = await  mysleep(5000);
+        log.Info(LOG_TAG_CLOUD,"myslep retured");
+        */
+        //
     }
     return JSON.stringify(returnJson);
+}
+function *waitForResponse(){
+    var wait = yield mysleep(5000);
+}
+function mysleep(millis) {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () { 
+        console.log("Timer retruned");resolve("success"); 
+        gTestVar=0;}
+        , millis);
+    });
 }
 
 gTestInputJason1= 

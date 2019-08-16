@@ -19,7 +19,7 @@ var registerPublilsh="/"+gateway.gatewayNameType+"/cmdcld/register";
 exports.registerPublilsh=registerPublilsh;
 var deRegisterPublilsh="/"+gateway.gatewayNameType+"/cmdcld/deregister";
 exports.deRegisterPublilsh=deRegisterPublilsh;
-var statusPublilsh="/"+gatewayNameType+"/datacld/status";
+var statusPublilsh="/"+gateway.gatewayNameType+"/datacld/status";
 exports.statusPublilsh=statusPublilsh;
 
 //Message index

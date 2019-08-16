@@ -39,7 +39,8 @@ var httpsHandler = function (request, response) {
          response.writeHead(200, "OK", {'Content-Type': 'app/json'});
          console.log("returnJson::");
          console.log(returnJson);
-         response.end(returnJson);
+         //response.end(returnJson);
+         response.end("rakesh");
          //writeJson("./jsonretun.txt");
         });
      }

@@ -1,8 +1,9 @@
 typedef struct ActionJson{
-   char version[64];
+   int  version;
    char location[64];
    char name[64];
    char state[64];
+   int  cmdId;
 }ActionJson;
 
 extern char gDeviceJson[];

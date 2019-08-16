@@ -26,14 +26,14 @@
 //#define FIX_SSID            "dkrishna"
 //#define FIX_PASSWORD        "9908299082"
 
-//#define FIX_SSID            "BEAM86211"
-//#define FIX_PASSWORD        "23426609"
+#define FIX_SSID            "BEAM86211"
+#define FIX_PASSWORD        "23426609"
 
 //#define FIX_SSID            "rajivshankar"
 //#define FIX_PASSWORD        ""
 
-#define FIX_SSID            "SmartEmployee"
-#define FIX_PASSWORD        "TronX$@#"
+//#define FIX_SSID            "SmartEmployee"
+//#define FIX_PASSWORD        "TronX$@#"
 #endif
 #define SERIAL_LOG_CHARCOUNT_IN_LINE    24
 

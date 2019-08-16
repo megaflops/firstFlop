@@ -12,7 +12,7 @@
 char gDeviceJson[] = 
 "{\
     \"version\": 3, \
-     \"thingName\": \"xxxxxxx\", \
+    \"thingName\": \"xxxxxxx\", \
      \"deviceID\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxx\", \
      \"thingSubTypeName\": \"switch\", \
      \"attributes\": { \
@@ -23,9 +23,10 @@ char gDeviceJson[] =
          \"numConnections\":2, \
          \"connections\": [ \
           { \"state\":\"on/off\", \"as\":\"light2\",\"subTypeName\": \
-             \"study lamp\",\"rating\":\"6a\",\"currentState\":\"off\",\"requestedState\":\"off\",\"lastUpdated\":\"0\"},\
+             \"study lamp\",\"rating\":\"6a\",\"currentState\":\"off\",\"requestedState\":\"off\",\"lastUpdated\":\"0\",\"cmdId\":0 \
+          },\
           { \"state\":\"on/off\", \"as\":\"light3\",\"subTypeName\": \
-             \"table lamp\",\"rating\":\"6a\",\"currentState\":\"off\",\"requestedState\":\"off\",\"lastUpdated\":\"0\" \
+             \"table lamp\",\"rating\":\"6a\",\"currentState\":\"off\",\"requestedState\":\"off\",\"lastUpdated\":\"0\",\"cmdId\":0 \
           } \
         ]\ 
   }\
@@ -58,8 +59,11 @@ int updateDeviceJason(ActionJson*actionJson , int *ledIndex){
                 strPtr = doc["attributes"]["connections"][i]["requestedState"];
                 logInfo(LOG_TAG,strPtr);
                 logInfo(LOG_TAG,actionJson->state);
+                logInfo(LOG_TAG,actionJson->cmdId);
                 /* UPdate device state*/
                 doc["attributes"]["connections"][i]["currentState"]=actionJson->state;
+                doc["attributes"]["connections"][i]["cmdId"]=actionJson->cmdId;
+                doc["attributes"]["connections"][i]["lastUpdated"]=0xFF;
                 serializeJson(doc,gDeviceJsonArray1,1024);
                 memcpy(gDeviceJsonArray,gDeviceJsonArray1,1024);
                 *ledIndex=i;
@@ -94,6 +98,10 @@ int parseJsonForAction(const char* jasonStr, ActionJson *actionJson,int length){
   const char *strPtr;
   int a;
   a=doc["version"];
+  Serial.println(a);
+  
+  a=doc["cmdId"];
+  actionJson->cmdId = a;
   Serial.println(a);
 
   strPtr=doc["location"];

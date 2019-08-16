@@ -36,7 +36,7 @@ EspLightPoint::EspLightPoint(String deviceType,String deviceId,String brokerAddr
     mOnBoardLED[2] = new EspLight(D5); //GPIO14
     mOnBoardLED[3] = new EspLight(D6); //GPIO12
     mBoard.loadConfigFromFlash();
-    setupDisplay();
+    //setupDisplay();
 }
 
 bool EspLightPoint:: setupDisplay(){

@@ -16,6 +16,7 @@ function deviceDBClass(config,index){
 	this.currentState=config.attributes.connections[index].currentState;
 	this.requestedState=config.attributes.connections[index].requestedState;
     this.lastUpdated=config.attributes.connections[index].lastUpdated;
+    this.cmdId=config.attributes.connections[index].cmdId;
     this.connectionIndex = index;
     this.connectionJson = getConnectionIndexJason(config,index);
 }

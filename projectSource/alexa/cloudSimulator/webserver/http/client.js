@@ -3,6 +3,7 @@ const fs = require('fs');
 var gActionJson= 
 {
     "version":3,
+    "cmdId":0xFFFF,
     "location":"roomxxxx",
     "name":"lightxxxx",
     "state":"xxxxxxxx",
@@ -46,6 +47,7 @@ else{
   }
 }
 
+
 var returnJson={
   "version":3,
   "location":"xxxxxx",
@@ -58,32 +60,45 @@ var returnJson={
 };
 
 function parseResposneFromCloud(responseString){
-    var speechText,speechTextExt;
-    console.log("response form cloud");
-    var jsonObj = JSON.parse(responseString);
-    if(jsonObj.return == "success") {
-      if(jsonObj.commandType == "status"){
-         speechText = " status of " +jsonObj.location  +"  " + jsonObj.name;
-         speechTextExt = " which is" +"  "  +jsonObj.nameas +" in " +jsonObj.locationName +" is " +jsonObj.state;
-         speechText = speechText+speechTextExt;
-      }
-      else{
-        speechText = "truning " +jsonObj.state +"  "  +jsonObj.location +"  "  + jsonObj.name;
-        speechTextExt = +"  " +"which is " +jsonObj.nameas +"  in " +jsonObj.locationName;
-        speechText = speechText+speechTextExt;
-      }
+  var speechText,speechTextExt;
+  console.log("response form cloud");
+  var jsonObj;
+  try {
+        var jsonObj = JSON.parse(responseString);
+        // if came to here, then valid
+  } catch(e) {
+        // failed to parse
+        console.log("validateJason failed to parse json");
+        return null;
+  }
+  if(jsonObj.return === "success") {
+    if(jsonObj.commandType === "status"){
+       speechText = " status of " +jsonObj.location  +"  " + jsonObj.name;
+       speechTextExt = " which is" +"  "  +jsonObj.nameas +" in " +jsonObj.locationName +" is " +jsonObj.state;
+       speechText = speechText+speechTextExt;
     }
-    else if(jsonObj.return == "no init"){
-      speechText = " I am having trouble with initlization of gateway";
+    else{
+      speechText = "truning " +jsonObj.state +"  "  +jsonObj.location +"  "  + jsonObj.name;
+      speechTextExt = "  which is " +jsonObj.nameas +"  in  " +jsonObj.locationName;
+      speechText = speechText+speechTextExt;
     }
-    else {
-       if(jsonObj.commandType == "status") 
-        speechText = " I am having trouble with status of" +"  " +jsonObj.location +"  " + jsonObj.name;
-       else
-       speechText = " I am having trouble with turning " +"  " +jsonObj.state +"  " +jsonObj.location +"  " + jsonObj.name;
-    }
-    //console.log("Sppech" +speechText);
-    return speechText;
+  }
+  else if(jsonObj.return === "samestate") {
+      speechText =   "state of  " +jsonObj.location +"  "  + jsonObj.name;
+      speechTextExt = "  which is" +"  "  +jsonObj.nameas +" in " +jsonObj.locationName +" is already " +jsonObj.state;
+      speechText = speechText+speechTextExt;
+  }
+  else if(jsonObj.return === "no init"){
+    speechText = " I am having trouble with initlization of gateway";
+  }
+  else {
+     if(jsonObj.commandType === "status") 
+      speechText = " I am having trouble with status of" +"  " +jsonObj.location +"  " + jsonObj.name;
+     else
+     speechText = " I am having trouble with turning " +"  " +jsonObj.state +"  " +jsonObj.location +"  " + jsonObj.name;
+  }
+  //console.log("Sppech" +speechText);
+  return speechText;
 }
 
 async function  sendHTTPRequest(jsonString) {
@@ -105,19 +120,18 @@ async function  sendHTTPRequest(jsonString) {
       reject("error");
     });
    });
-    req.on('timeout', function (socket) {
+   req.on('error',function(err){
+      console.log('problem with request: ' + err);
+      reject("error");
+   })
+   req.on('timeout', function (socket) {
     console.log("on timeout");
     req.destroy();
    })
-   req.on('error',function(err){
-    console.log('problem with request: ' + err);
-    reject("error");
-   })
-   //console.log("sending data " +jsonString);
+   console.log("sending data " +jsonString);
    req.write(jsonString);
    req.end();
-  
-  }).
+ }).
   catch(error => {
     // Will not execute
     //console.log('caught new promise', error);
@@ -126,13 +140,12 @@ async function  sendHTTPRequest(jsonString) {
 }
 
 async function sendAndWait(json){
+  var speech;
   var myPromise = sendHTTPRequest(json);
   var result = await myPromise;
-  var speech;
-  //console.log("Promise enter" , result);
-  if(result == "error"){
+  if(result === "error"){
     console.log("Promise failure" , result);
-    speech = "I am having trouble connecting with gateway"
+    speech = "Sorry I am having trouble connecting";
   }
   else{
     console.log("Promise success" , result);
@@ -171,6 +184,18 @@ function createActionJson(state,roomName, roomNum,lightName,lightNUmber){
   return JSON.stringify((gActionJson));
 }
 
-var jsonStr = createActionJson("on","bed room", "1", "tubelight","2");
-sendAndWait(jsonStr);
-console.log("function end");
+function mysleep(millis) {
+  return new Promise(function (resolve, reject) {
+      setTimeout(function () { resolve(); }, millis);
+  });
+}
+
+async function main(){
+  var jsonStr = createActionJson("off","room", "1", "light","2");
+  sendAndWait(jsonStr);
+  console.log("sendAndWait end");
+  await mysleep(5000);
+  console.log("function end");
+}
+
+main();

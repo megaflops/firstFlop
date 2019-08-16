@@ -148,7 +148,9 @@ function itrateOverDeviceDB(locationCount,searchFor){
                                                                   "state":gwInstance.deviceArray[i].state,
                                                                   "subTypeName":gwInstance.deviceArray[i].subTypeName,
                                                                   "currentState":gwInstance.deviceArray[i].currentState,
-                                                                  "requestedState":gwInstance.deviceArray[i].requestedState
+                                                                  "requestedState":gwInstance.deviceArray[i].requestedState,
+                                                                  "lastUpdated":gwInstance.deviceArray[i].lastUpdated,
+                                                                  "cmdId":gwInstance.deviceArray[i].cmdId
                                                                  };
            
             j++;
@@ -298,6 +300,7 @@ function updateDbEntryWithJson(dbIndex,jasonObj,subDeviceIndex){
     gwInstance.deviceArray[dbIndex].currentState=jasonObj.attributes.connections[subDeviceIndex].currentState;
     gwInstance.deviceArray[dbIndex].subTypeName=jasonObj.attributes.connections[subDeviceIndex].subTypeName;
     gwInstance.deviceArray[dbIndex].lastUpdated=gwInstance.deviceArray[dbIndex].lastUpdated;
+    gwInstance.deviceArray[dbIndex].cmdId=jasonObj.attributes.connections[subDeviceIndex].cmdId;
 }
 module.exports.prepareActionFromJason = function(inputJson){
     jObj = JSON.parse(inputJson);
